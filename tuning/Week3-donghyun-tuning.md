@@ -113,6 +113,8 @@ nohup ./avalanche --metric-count=600 --series-count=200 --port=9001 > /dev/null 
 
 curl localhost:9001/metrics | head -n 20
 ```
+<img width="896" height="390" alt="스크린샷 2026-03-24 오후 9 29 18" src="https://github.com/user-attachments/assets/62259e04-ce9d-4b43-b803-1042cfbfd614" />
+
 
 ## 1-4. Prometheus 설정 (`prometheus.yml`)
 
@@ -129,6 +131,9 @@ scrape_configs:
     static_configs:
       - targets: ["localhost:9001"]
 ```
+
+<img width="892" height="420" alt="스크린샷 2026-03-24 오후 9 30 50" src="https://github.com/user-attachments/assets/1cde285f-9e83-49fb-8cef-9ab039dbeee9" />
+
 
 ---
 
@@ -154,6 +159,8 @@ iostat -dxz 1
 ```
 
 ### 실습 결과 — `iostat` (압축 OFF)
+
+<img width="1600" height="320" alt="스크린샷 2026-03-24 오후 9 34 49" src="https://github.com/user-attachments/assets/c94e7aa3-b17e-45a9-a11c-1ba2bf37cb7a" />
 
 ```
 Device            r/s     rkB/s   rrqm/s  %rrqm r_await rareq-sz     w/s     wkB/s   wrqm/s  %wrqm w_await wareq-sz     d/s     dkB/s   drqm/s  %drqm d_await dareq-sz     f/s f_await  aqu-sz  %util
@@ -283,6 +290,9 @@ vm.dirty_writeback_centisecs = 500
 vm.dirty_expire_centisecs = 3000
 ```
 
+<img width="894" height="201" alt="스크린샷 2026-03-24 오후 9 52 56" src="https://github.com/user-attachments/assets/6807e89d-df77-4367-9f4c-1e4f88750401" />
+
+
 ### 실습 — Dirty Page 실시간 관찰
 
 ```
@@ -294,6 +304,9 @@ Every 1.0s: grep -i 'dirty' /proc/meminfo            mr8356: Tue Mar 24 21:55:40
 
 Dirty:             10604 kB
 ```
+
+<img width="779" height="70" alt="스크린샷 2026-03-24 오후 9 55 30" src="https://github.com/user-attachments/assets/242b3f2e-f577-4511-90d8-60ea2ce0f9a6" />
+
 
 ### 분석: 기본값에서 10 MB 수준에서 빠지는 이유
 
