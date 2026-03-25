@@ -42,7 +42,10 @@
 - 먼저 WAL 세그먼트를 확인해봤습니다.
 <img width="610" height="151" alt="image" src="https://github.com/user-attachments/assets/ddfe2a6a-4bd5-49f5-9afd-0217359c7dc7" />
 
-- checkpoint.00000029 폴더: 29번 파일까지는 안전하게 디스크 블록으로 만들었다가 마킹해둔 것입니다.
+- checkpoint.00000029 폴더
+  - WAL 세그먼트 0~29번을 순회하며, Head에 아직 살아있는 시리즈 레코드와 아직 Compaction 안 된 샘플만 추려서 만든 필터링된 WAL 입니다.
+  - 이 체크포인트가 완성된 후 원본 세그먼트 0~29는 삭제됩니다.
+
 
 그리고 가장 최근 파일을 한번 열어보겠습니다. (xxd를 통해 16진수로 변환해서 확인을 합니다.)
 <img width="622" height="359" alt="image" src="https://github.com/user-attachments/assets/f4a31f21-3b85-4314-8aea-b56406a34297" />
