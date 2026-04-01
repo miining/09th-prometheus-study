@@ -81,8 +81,7 @@ Prometheus에서는:
 ### 1.3 Code
  
 **head_chunks.go**  
-`ChunkDiskMapperRef`는 파일 번호 + 오프셋으로 구성된 불변 참조값이다.  
-한번 기록된 chunk의 위치는 절대 변하지 않는다.
+`ChunkDiskMapperRef`는 디스크 상에서 chunk가 저장된 실제 위치(파일 번호 + 오프셋)으로 구성된 불변 참조값이다. 한번 기록된 chunk의 위치는 절대 변하지 않는다.
  
 ```go
 // ChunkDiskMapperRef represents the location of a head chunk on disk.
@@ -95,7 +94,8 @@ func newChunkDiskMapperRef(seq, offset uint64) ChunkDiskMapperRef {
     return ChunkDiskMapperRef((seq << 32) | offset)
 }
 ```
- 
+한 번 기록된 chunk의 위치가 바뀌면 기존 ref는 더 이상 유효하지 않게 되므로, Prometheus는 항상 현재 파일의 끝에 새 chunk를 덧붙이는 append-only 방식을 사용.
+
 `writeChunk()`는 항상 파일 끝에 append하며, 기존 데이터를 덮어쓰지 않는다 (append-only).  
  
 파일이 닫힐 때 (`cut()`) maxt가 확정되고, 이후 그 파일은 수정되지 않는다:
@@ -104,8 +104,7 @@ func newChunkDiskMapperRef(seq, offset uint64) ChunkDiskMapperRef {
 // cut() 내부 — 새 파일로 전환 시 현재 파일을 닫고 maxt를 확정
 cdm.mmappedChunkFiles[cdm.curFileSequence].maxt = cdm.curFileMaxt
 ```
- 
-append-only + immutable 구조 덕분에, 기존 데이터는 절대 변하지 않으므로 여러 reader가 write lock 없이 동시에 안전하게 접근할 수 있다.
+Prometheus에서는 이미 기록된 chunk의 위치와 내용이 바뀌지 않기 때문에, reader는 과거의 닫힌 파일을 read-only 데이터처럼 다룰 수 있다. 그래서 readPathMtx를 sync.RWMutex로 두고, 일반 조회 시에는 RLock()만으로 여러 reader가 동시에 접근할 수 있다.
 
 
 ---
